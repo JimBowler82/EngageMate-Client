@@ -4,13 +4,21 @@ import { Button, Progress, Stack, LightMode } from "@chakra-ui/react";
 
 function SkPollResults({ data, stopPoll, socket }) {
   function calculateProgressBar(option) {
-    return 50;
+    const totalVotes = data.options.reduce((acc, curr) => acc + curr[2], 0);
+    return (option[2] / totalVotes) * 100;
   }
 
+  function testVote() {
+    socket.emit("vote", { data: 1 });
+    console.log("test vote sent");
+  }
+
+  console.log("skpollresults render with data: ", data);
+
   useEffect(() => {
-    return () => {
+    /* return () => {
       socket.emit("sessionStop");
-    };
+    }; */
   }, []);
 
   return (
@@ -32,7 +40,7 @@ function SkPollResults({ data, stopPoll, socket }) {
                 </p>
                 <Progress
                   colorScheme="pink"
-                  value={calculateProgressBar(option)}
+                  value={calculateProgressBar(option) || 0}
                 />
               </div>
             );
@@ -42,6 +50,7 @@ function SkPollResults({ data, stopPoll, socket }) {
         <Button colorScheme="red" onClick={stopPoll}>
           Stop Session
         </Button>
+        <button onClick={testVote}>Test Vote</button>
       </LightMode>
     </div>
   );
